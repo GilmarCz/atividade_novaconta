@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_print, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'dart:core';
+
 
 class FormScreen extends StatefulWidget {
   const FormScreen({Key? key}) : super(key: key);
@@ -17,32 +19,43 @@ class _FormScreenState extends State<FormScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
+  bool _isValidEmail(String email) {
+    // Utilizando uma expressão regular para validar o formato do e-mail
+    final emailRegex = RegExp(r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$');
+
+    return emailRegex.hasMatch(email);
+    }
+
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Nova Conta'),
-        ),
-        body: Center(
-          child: SingleChildScrollView(
-            child: Container(
-              height: 650,
-              width: 400,
-              decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.circular(05),
-                  border: Border.all(width: 3)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      validator: (String? value){
-                        if(value != null && value.isEmpty){
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Nova Conta'),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            height: 650,
+            width: 400,
+            decoration: BoxDecoration(
+              color: Colors.black12,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(width: 3),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      validator: (value) {
+                        if (value != null && value.isEmpty) {
                           return 'Insira o seu nome';
                         }
                         return null;
@@ -56,12 +69,10 @@ class _FormScreenState extends State<FormScreen> {
                         filled: true,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      validator: (value){
-                        if(value!.isEmpty){
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
                           return 'Insira sua idade';
                         }
                         return null;
@@ -76,18 +87,17 @@ class _FormScreenState extends State<FormScreen> {
                         filled: true,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      validator: (value){
-                        if(value!.isEmpty){
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
                           return 'Insira a senha';
                         }
                         return null;
                       },
                       controller: passwordController,
                       textAlign: TextAlign.center,
+                      obscureText: true,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         hintText: 'Senha',
@@ -95,50 +105,49 @@ class _FormScreenState extends State<FormScreen> {
                         filled: true,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      validator: (value){
-                        if(value!.isEmpty){
-                          return 'Insira o email';
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Insira o e-mail';
+                        } else if (!_isValidEmail(value)) {
+                          return 'E-mail inválido';
                         }
                         return null;
                       },
                       keyboardType: TextInputType.emailAddress,
-                      // ignore: avoid_types_as_parameter_names
-                      onChanged: (Text) {
+                      onChanged: (text) {
                         setState(() {});
                       },
                       controller: emailController,
                       textAlign: TextAlign.center,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: 'Email',
+                        hintText: 'E-mail',
                         fillColor: Colors.white70,
                         filled: true,
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          print(nameController.text);
+                          print(int.parse(ageController.text));
+                          print(passwordController.text);
+                          print(emailController.text);
 
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        print(nameController.text);
-                        print(int.parse(ageController.text));
-                        print(passwordController.text);
-                        print(emailController.text);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Printando nova Conta'),
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text('Criar Conta!'),
-                  )
-                ],
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Printando nova Conta'),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text('Criar Conta!'),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
